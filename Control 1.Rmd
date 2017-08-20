@@ -11,22 +11,30 @@ library('ggplot2')
 ```
 
 
-Control 1
+#Control 1
 Estudio sobre el prestigio de la Ocupación en Canadá e Índice Socioeconómico de Duncan.
 
-#1. Análisis exploratorio de Datos
+##1. Análisis exploratorio de Datos
 
 
-El conjunto de datos tiene los siguientes faltantes y duplicados, respectivamente:
+El conjunto de datos tiene los siguientes faltantes y observaciones duplicadas, respectivamente:
 
 ```{r Faltantes y duplicados, echo=F}
 sapply(datbr,function(x){sum(is.na(x))})
 sum(duplicated(datbr))
 ```
 
-El número total de faltantes es 4 de las 102 observaciones. por lo tanto la métrica de completitud indica que faltan el 3.92% de los datos y todos son de la variable "Tipo",además de que no hay duplicados.
+Sin embargo hay 2 profesiones con la misma clave del censo
 
-Es notable el hecho que el primer estudio se realizo con ingresos mayores de $\$3500$ y en los datos presentados hay 17 observaciones con un ingreso promedio menor a $\$3500$ :
+```{r censo repetido,echo=F}
+which(duplicated(datbr$CENSO)) #Cúales son los duplicados
+datbr[c(6,7,71,72),] #Entrega las profesiones con los duplicados
+```
+
+
+El número total de faltantes es 4 de las 102 observaciones, por lo tanto la métrica de completitud indica que faltan el 3.92% de los datos y todos son de la variable "Tipo", además que no hay duplicados.
+
+Es de llamar la atención que el primer estudio se realizó con ingresos mayores de $\$3500$ y en los datos presentados hay 17 observaciones con un ingreso promedio menor a $\$3500$ :
 
 ```{r Ingreso menos a 3500, echo=F}
 datbr[which(datbr$INGRESO<3500),c(1,3)]
@@ -36,8 +44,16 @@ datbr[which(datbr$INGRESO<3500),c(1,3)]
 
 ```{r Detección visual Outliers, echo=F }
 plot(datbr$EDUCACION,datbr$INGRESO, type = "p", main = "Detección visual outliers",xlab = "Educación", ylab = "Ingreso", col="blue", pch=16)
-
+points(12.26,25879,col="red", pch = 16 )
 ```
+
+La observación a la que corresponde el punto rojo (probable outlier) es: 
+
+```{r Búsqueda de outliers, echo=FALSE}
+# which(datbr$EDUCACION<13 & datbr$INGRESO>20000) Encuentra la observación que se desea
+datbr[2,]
+```
+
 
 
 ```{r Boxplots, echo=F}
@@ -54,18 +70,24 @@ ggplot(datbr, aes(y=datbr$PRESTIGIO,x="")) + geom_boxplot(fill = "blue", colour 
 
 
 
-#2.Clasificación de variables
+##2. Clasificación de variables
 
 ```{r echo=F}
 str(datbr)
 ```
 
 
-Los datos contienen 7 variables distintas: ocupación,educación,ingreso,mujeres,prestigio,censo,tipo. De las cuales las variables ocupación,censo y tipo son variables cualitativas; así como educación, mujeres y prestigio son del tipo cuantitativas continuas, e ingreso es una variable cuantitativa discreta en este caso.
+Los datos contienen 7 variables distintas: Ocupación, educación, ingreso, mujeres, prestigio, censo, tipo. De las cuales las variables ocupación, censo y tipo son variables cualitativas; así como educación, mujeres y prestigio son del tipo cuantitativas continuas, e ingreso una variable cuantitativa discreta en este caso.
 
 ```{r echo=FALSE}
 head(datbr,5) #Se observan las primeras 5 observaciones
 tail(datbr,5) #Se observan las últimas 5 observaciones
 ```
 
+##3. Explicación del prestigio respecto al nivel educativo
+
+```{r ML Prestigio y Educación, echo=FALSE}
+plot(datbr$EDUCACION, datbr$PRESTIGIO, col="blue", pch=16, ylab = "Prestigio", xlab = "Educación") # Gráfica de los datos contrastados
+abline(-10.732,5.361,col="red") # Línea de la recta que se ajusta al modelo
+```
 
