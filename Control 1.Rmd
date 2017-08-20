@@ -1,0 +1,71 @@
+---
+title: "Tarea 1"
+author: "Erick Zarza"
+date: "18 de agosto de 2017"
+output: html_document
+---
+```{r Lectura de Datos y carga de paquetes, echo=F}
+setwd("C:\\Users\\EZ\\Desktop\\S11\\Estadística aplicada II\\Tareas\\T1") #Cambiar directorio de trabajo
+datbr<-read.csv("Datos sobre el Prestigio de la Ocupación en Canada.csv",header = T,sep = ",") #Lectura de los datos
+library('ggplot2')
+```
+
+
+Control 1
+Estudio sobre el prestigio de la Ocupación en Canadá e Índice Socioeconómico de Duncan.
+
+#1. Análisis exploratorio de Datos
+
+
+El conjunto de datos tiene los siguientes faltantes y duplicados, respectivamente:
+
+```{r Faltantes y duplicados, echo=F}
+sapply(datbr,function(x){sum(is.na(x))})
+sum(duplicated(datbr))
+```
+
+El número total de faltantes es 4 de las 102 observaciones. por lo tanto la métrica de completitud indica que faltan el 3.92% de los datos y todos son de la variable "Tipo",además de que no hay duplicados.
+
+Es notable el hecho que el primer estudio se realizo con ingresos mayores de $\$3500$ y en los datos presentados hay 17 observaciones con un ingreso promedio menor a $\$3500$ :
+
+```{r Ingreso menos a 3500, echo=F}
+datbr[which(datbr$INGRESO<3500),c(1,3)]
+```
+
+
+
+```{r Detección visual Outliers, echo=F }
+plot(datbr$EDUCACION,datbr$INGRESO, type = "p", main = "Detección visual outliers",xlab = "Educación", ylab = "Ingreso", col="blue", pch=16)
+
+```
+
+
+```{r Boxplots, echo=F}
+
+ggplot(datbr, aes(y=datbr$EDUCACION,x="")) + geom_boxplot(fill = "green", colour = "black", alpha = 0.3) + scale_x_discrete(name = "") + scale_y_continuous(name = "", breaks = seq(0,20,2), limits=c(0, 20)) + ggtitle("Boxplot del nivel de educación") #Boxplot del Nivel de educación
+
+ggplot(datbr, aes(y=datbr$INGRESO,x="")) + geom_boxplot(fill = "red", colour = "black", alpha = 0.3) + scale_x_discrete(name = "") + scale_y_continuous(name = "", breaks = seq(0,30000,5000), limits=c(0, 30000)) + ggtitle("Boxplot del Ingreso") #Boxplot del Ingreso
+
+ggplot(datbr, aes(y=datbr$MUJERES,x="")) + geom_boxplot(fill = "yellow", colour = "black", alpha = 0.3) + scale_x_discrete(name = "") + scale_y_continuous(name = "", breaks = seq(0,100,10), limits=c(0, 100)) + ggtitle("Boxplot del porcentaje de mujeres por profesión") #Boxplot Porcentaje de mujeres
+
+ggplot(datbr, aes(y=datbr$PRESTIGIO,x="")) + geom_boxplot(fill = "blue", colour = "black", alpha = 0.3) + scale_x_discrete(name = "") + scale_y_continuous(name = "", breaks = seq(0,100,10), limits=c(0, 100)) + ggtitle("Boxplot del prestigio de la profesión") #Boxplot Prestigio
+
+```
+
+
+
+#2.Clasificación de variables
+
+```{r echo=F}
+str(datbr)
+```
+
+
+Los datos contienen 7 variables distintas: ocupación,educación,ingreso,mujeres,prestigio,censo,tipo. De las cuales las variables ocupación,censo y tipo son variables cualitativas; así como educación, mujeres y prestigio son del tipo cuantitativas continuas, e ingreso es una variable cuantitativa discreta en este caso.
+
+```{r echo=FALSE}
+head(datbr,5) #Se observan las primeras 5 observaciones
+tail(datbr,5) #Se observan las últimas 5 observaciones
+```
+
+
