@@ -4,7 +4,7 @@ author: "Erick Zarza"
 date: "18 de agosto de 2017"
 output: html_document
 ---
-```{r Lectura de Datos y carga de paquetes, echo=F}
+```{r Lectura de Datos y carga de paquetes, echo=F, warning=0}
 setwd("C:\\Users\\EZ\\Desktop\\S11\\Estadística aplicada II\\Tareas\\T1") #Cambiar directorio de trabajo
 datbr<-read.csv("Datos sobre el Prestigio de la Ocupación en Canada.csv",header = T,sep = ",") #Lectura de los datos
 library('ggplot2')
