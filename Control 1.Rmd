@@ -2,12 +2,15 @@
 title: "Tarea 1"
 author: "Erick Zarza"
 date: "18 de agosto de 2017"
-output: html_document
+output:
+  html_document: default
+  pdf_document: default
 ---
 ```{r Lectura de Datos y carga de paquetes, echo=F, warning=0}
 setwd("C:\\Users\\EZ\\Desktop\\S11\\Estadística aplicada II\\Tareas\\T1") #Cambiar directorio de trabajo
 datbr<-read.csv("Datos sobre el Prestigio de la Ocupación en Canada.csv",header = T,sep = ",") #Lectura de los datos
 library('ggplot2')
+library('gridExtra')
 ```
 
 
@@ -40,11 +43,11 @@ Es de llamar la atención que el primer estudio se realizó con ingresos mayores
 datbr[which(datbr$INGRESO<3500),c(1,3)]
 ```
 
+
 ##Detección visual de outliers
 
-```{r Detección visual Outliers, echo=F }
+```{r Gráficas de outliers(Prestigio/Educación, Prestigio/Ingreso), echo = FALSE, fig.width = 3.5, fig.height = 3, tidy = TRUE}
 plot(datbr$EDUCACION,datbr$PRESTIGIO, type = "p",xlab = "Educación", ylab = "Prestigio", col="blue", pch=16)
-
 
 plot(datbr$INGRESO,datbr$PRESTIGIO, type = "p",xlab = "Ingreso", ylab = "Prestigio", col="blue", pch=16,xlim = c(0,30000),ylim = c(0,100))
 points(25308,87.2,col="red", pch = 16)
@@ -52,33 +55,52 @@ points(25879,69.1,col="red", pch = 16)
 text(25879,60,"General Managers")
 text(25308,80,"Physicians")
 
-plot(datbr$MUJERES,datbr$PRESTIGIO, type = "p",xlab = "Ingreso", ylab = "Mujeres", col="blue", pch=16)
+par(mfrow=c(1,2))
+
+```
+
+
+
+Las observaciones a las que les corresponde el punto rojo (probable outlier) en el comparativo de entre el Prestigio y el Ingreso son: 
+
+```{r Búsqueda de outliers, echo=FALSE}
+#which(datbr$PRESTIGIO>60 & datbr$INGRESO>25000) Encuentra las observación que se desea
+datbr[c(2,24),]
+
+#which(datbr$PRESTIGIO > 60 & datbr$TIPO == "wc")
+datbr[31,] #
+```
+
+```{r Gráficas de outliers(Prestigio/Mujeres, Prestigio/Tipo), echo = FALSE, fig.width = 3.5, fig.height = 3, tidy = TRUE}
+
+plot(datbr$PRESTIGIO,datbr$MUJERES, type = "p",xlab = "Mujeres", ylab = "Prestigio", col="blue", pch=16)
 
 plot(datbr$TIPO,datbr$PRESTIGIO, type = "p",xlab = "Tipo", ylab = "Prestigio", col="blue", pch=16)
 points(25308,87.2,col="red", pch = 16)
+
 #text(wc,76.04,"Medical Technicians")
 
-
+par(mfrow=c(1,2))
 ```
+El posible outlier de "WC" es Medical Technicians.
 
-Las observaciones a las que les corresponde el punto rojo(probable outlier) en el comparativo de entre el Prestigio y el Ingreso son: 
+El valor mínimo, primer cuartil, mediana, media 3er cuartil y máximo de cada variable es:
 
-```{r Búsqueda de outliers, echo=FALSE}
-# which(datbr$PRESTIGIO>60 & datbr$INGRESO>25000) Encuentra las observación que se desea
-datbr[c(2,24),]
+```{r Sumarry Datos, echo=FALSE}
+summary(datbr[,-c(1,6,7)])
 ```
-
-
 
 ```{r Boxplots, echo=F}
 
-ggplot(datbr, aes(y=datbr$EDUCACION,x="")) + geom_boxplot(fill = "green", colour = "black", alpha = 0.3) + scale_x_discrete(name = "") + scale_y_continuous(name = "", breaks = seq(0,20,2), limits=c(0, 20)) + ggtitle("Boxplot del nivel de educación") #Boxplot del Nivel de educación
+g1<-ggplot(datbr, aes(y=datbr$EDUCACION,x="")) + geom_boxplot(fill = "green", colour = "black", alpha = 0.3) + scale_x_discrete(name = "") + scale_y_continuous(name = "", breaks = seq(0,20,2), limits=c(0, 20)) + ggtitle("Boxplot del nivel de educación") #Boxplot del Nivel de educación
 
-ggplot(datbr, aes(y=datbr$INGRESO,x="")) + geom_boxplot(fill = "red", colour = "black", alpha = 0.3) + scale_x_discrete(name = "") + scale_y_continuous(name = "", breaks = seq(0,30000,5000), limits=c(0, 30000)) + ggtitle("Boxplot del Ingreso") #Boxplot del Ingreso
+g2<-ggplot(datbr, aes(y=datbr$INGRESO,x="")) + geom_boxplot(fill = "red", colour = "black", alpha = 0.3) + scale_x_discrete(name = "") + scale_y_continuous(name = "", breaks = seq(0,30000,5000), limits=c(0, 30000)) + ggtitle("Boxplot del Ingreso") #Boxplot del Ingreso
 
-ggplot(datbr, aes(y=datbr$MUJERES,x="")) + geom_boxplot(fill = "yellow", colour = "black", alpha = 0.3) + scale_x_discrete(name = "") + scale_y_continuous(name = "", breaks = seq(0,100,10), limits=c(0, 100)) + ggtitle("Boxplot del porcentaje de mujeres por profesión") #Boxplot Porcentaje de mujeres
+g3<-ggplot(datbr, aes(y=datbr$MUJERES,x="")) + geom_boxplot(fill = "yellow", colour = "black", alpha = 0.3) + scale_x_discrete(name = "") + scale_y_continuous(name = "", breaks = seq(0,100,10), limits=c(0, 100)) + ggtitle("Boxplot del porcentaje de mujeres por profesión") #Boxplot Porcentaje de mujeres
 
-ggplot(datbr, aes(y=datbr$PRESTIGIO,x="")) + geom_boxplot(fill = "blue", colour = "black", alpha = 0.3) + scale_x_discrete(name = "") + scale_y_continuous(name = "", breaks = seq(0,100,10), limits=c(0, 100)) + ggtitle("Boxplot del prestigio de la profesión") #Boxplot Prestigio
+g4<-ggplot(datbr, aes(y=datbr$PRESTIGIO,x="")) + geom_boxplot(fill = "blue", colour = "black", alpha = 0.3) + scale_x_discrete(name = "") + scale_y_continuous(name = "", breaks = seq(0,100,10), limits=c(0, 100)) + ggtitle("Boxplot del prestigio de la profesión") #Boxplot Prestigio
+
+grid.arrange(g1,g2,g3,g4,ncol=2)
 
 ```
 
@@ -86,26 +108,43 @@ ggplot(datbr, aes(y=datbr$PRESTIGIO,x="")) + geom_boxplot(fill = "blue", colour 
 
 ##2. Clasificación de variables
 
-```{r echo=F}
+```{r Tipo Variables,echo=F}
 str(datbr)
 ```
 
 
 Los datos contienen 7 variables distintas: Ocupación, educación, ingreso, mujeres, prestigio, censo, tipo. De las cuales las variables ocupación, censo y tipo son variables cualitativas; así como educación, mujeres y prestigio son del tipo cuantitativas continuas, e ingreso una variable cuantitativa discreta en este caso.
 
-```{r echo=FALSE}
+```{r Encabezado y Cola , echo=FALSE}
 head(datbr,5) #Se observan las primeras 5 observaciones
 tail(datbr,5) #Se observan las últimas 5 observaciones
 ```
 
 ##3. Explicación del prestigio respecto al nivel educativo
 
-```{r ML Prestigio y Educación, echo=FALSE}
+```{r Relación Prestigio/Educación, echo=FALSE,fig.width=4,fig.height=3,tidy=TRUE}
 
 plot(datbr$EDUCACION, datbr$PRESTIGIO, col="blue", pch=16, ylab = "Prestigio", xlab = "Educación") # Gráfica de los datos contrastados
-
-par <- lm(datbr$PRESTIGIO~datbr$EDUCACION)
-
+lm(datbr$PRESTIGIO~datbr$EDUCACION)
 abline(-10.732,5.361,col="red") # Línea de la recta que se ajusta al modelo
+summary(lm(datbr$PRESTIGIO~datbr$EDUCACION))
 ```
+
+Se puede observar que los resultados de graficar el prestigio y la educación por profesión, nos muestran la relación que existe entre ambas, puesto que mayor educación implica mayor prestigio.
+Considerando el modelo lineal de R, se rechaza la $H_{0}$ en favor de la $H_{1}$ para $\beta_{0}$ y $\beta_{1}$.
+
+
+```{r Relación Prestigio/Ingreso, echo=FALSE,fig.width=4,fig.height=3,tidy=TRUE}
+plot(datbr$INGRESO,datbr$PRESTIGIO, type = "p",xlab = "Ingreso", ylab = "Prestigio", col="blue", pch=16,xlim = c(0,30000),ylim = c(0,100))
+
+```
+
+El prestigio parece que se puede explicar a través del ingreso. Ya que mientras mayor es el ingreso, tambien es mayor el prestigio. 
+
+```{r Relación Prestigio/Mujeres, echo=FALSE,fig.width=4,fig.height=3,tidy=TRUE}
+plot(datbr$PRESTIGIO,datbr$MUJERES, type = "p",xlab = "Mujeres", ylab = "Prestigio", col="blue", pch=16)
+
+```
+
+La concentración de los datos muestra una mayor acumulación en un prestigio bajo, pero no parece posible encontrar una tendencia.
 
